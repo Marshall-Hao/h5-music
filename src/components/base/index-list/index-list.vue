@@ -1,5 +1,5 @@
 <template>
-	<scroll class="index-list" :probe-type="3" @scroll="onScroll">
+	<scroll class="index-list" :probe-type="3" @scroll="onScroll" ref="scrollRef">
 		<ul ref="groupRef">
 			<li v-for="group in data" :key="group.title" class="group">
 				<h2 class="title">{{ group.title }}</h2>
@@ -16,12 +16,32 @@
 				{{ fixedTitle }}
 			</div>
 		</div>
+		<div
+			class="shortcut"
+			@touchstart.stop.prevent="onShortCutTouchStart"
+			@touchmove.stop.prevent="onShortCutTouchMove"
+			@touchend.stop.prevent
+		>
+			<ul>
+				<!-- ! shortcut for currentIndex === index? current:'' -->
+				<li
+					v-for="(item, index) in shortcutList"
+					:key="item"
+					:data-index="index"
+					class="item"
+					:class="{ current: currentIndex === index }"
+				>
+					{{ item }}
+				</li>
+			</ul>
+		</div>
 	</scroll>
 </template>
 
 <script>
 	import Scroll from "../scroll/scroll";
 	import useFixed from "./use-fixed";
+	import useShortcut from "./use-shortcut";
 	export default {
 		name: "index-list",
 		components: { Scroll },
@@ -34,12 +54,26 @@
 			},
 		},
 		setup(props) {
-			const { onScroll, groupRef, fixedTitle, fixedStyle } = useFixed(props);
+			const { onScroll, groupRef, fixedTitle, fixedStyle, currentIndex } =
+				useFixed(props);
+			const {
+				shortcutList,
+				onShortCutTouchStart,
+				scrollRef,
+				onShortCutTouchMove,
+			} = useShortcut(props, groupRef);
 			return {
+				// * fixed
 				groupRef,
 				onScroll,
 				fixedTitle,
 				fixedStyle,
+				currentIndex,
+				// * shortcut
+				shortcutList,
+				onShortCutTouchStart,
+				scrollRef,
+				onShortCutTouchMove,
 			};
 		},
 	};
@@ -108,6 +142,7 @@
 				line-height: 1;
 				color: $color-text-l;
 				font-size: $font-size-small;
+				// * https://stackoverflow.com/questions/9988558/what-does-in-sub-title-indicates-in-scss
 				&.current {
 					color: $color-theme;
 				}

@@ -40,6 +40,7 @@ export default function useFixed(props) {
     for (let i = 0; i < listHeightVal.length - 1; i++) {
       const heightTop = listHeightVal[i];
       const heightBottom = listHeightVal[i + 1];
+      // * 每个距离遍历一遍， 看他在哪个距离区间
       if (newY >= heightTop && newY <= heightBottom) {
         currentIndex.value = i;
         // 下一层距离顶部的距离
@@ -65,5 +66,5 @@ export default function useFixed(props) {
     scrollY.value = -pos.y;
   }
 
-  return { onScroll, groupRef, fixedTitle, fixedStyle };
+  return { onScroll, groupRef, fixedTitle, fixedStyle, currentIndex };
 }
