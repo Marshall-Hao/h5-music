@@ -205,15 +205,14 @@ function registerRecommend(app) {
         }
 
         // 往前端发送一个标准格式的响应数据，包括成功错误码和数据
-        setTimeout(() => {
-          res.json({
-            code: ERR_OK,
-            result: {
-              sliders,
-              albums,
-            },
-          });
-        }, 2000);
+
+        res.json({
+          code: ERR_OK,
+          result: {
+            sliders,
+            albums,
+          },
+        });
       } else {
         res.json(data);
       }
@@ -300,6 +299,7 @@ function registerSingerList(app) {
         }
         // 按字母顺序排序
         letter.sort((a, b) => {
+          //  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charCodeAt
           return a.title.charCodeAt(0) - b.title.charCodeAt(0);
         });
 

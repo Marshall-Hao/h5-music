@@ -13,7 +13,6 @@
     "@better-scroll/slide": "^2.4.2",
     "axios": "^0.25.0",
     "core-js": "^3.6.5",
-    "pinyin": "^2.10.2",
     "vue": "^3.2.8",
     "vue-router": "^4.0.11",
     "vue3-lazy": "^1.0.0-alpha.1",
@@ -34,6 +33,7 @@
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^7.0.0",
     "node-sass": "^5.0.0",
+    "pinyin": "^2.10.2",
     "sass-loader": "^10.1.0"
   }
 }
