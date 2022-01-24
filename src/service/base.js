@@ -5,10 +5,10 @@ const baseURL = "/";
 
 axios.defaults.baseURL = baseURL;
 
-export function get(url, paramas) {
+export function get(url, params) {
   return axios
     .get(url, {
-      paramas,
+      params,
     })
     .then((res) => {
       const serverData = res.data;
