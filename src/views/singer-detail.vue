@@ -9,6 +9,8 @@
 	import { getSingerDetail } from "../service/singer";
 	import { processSongs } from "../service/song";
 	import MusicList from "../components/music-list/music-list";
+	import storage from "good-storage";
+	import { SINGER_KEY } from "../assets/js/constant";
 
 	export default {
 		name: "singer-detail",
@@ -22,19 +24,41 @@
 			};
 		},
 		computed: {
+			computedSinger() {
+				let ret = null;
+				const singer = this.singer;
+				if (singer) {
+					ret = singer;
+				} else {
+					const cacheSinger = storage.session.get(SINGER_KEY);
+					if (cacheSinger && cacheSinger.mid === this.$route.params.id) {
+						ret = cacheSinger;
+					}
+				}
+				return ret;
+			},
 			pic() {
-				return this.singer && this.singer.pic;
+				const singer = this.computedSinger;
+				return singer && singer.pic;
 			},
 			title() {
-				return this.singer && this.singer.name;
+				const singer = this.computedSinger;
+				return singer && singer.name;
 			},
 		},
 		components: {
 			MusicList,
 		},
 		async created() {
-			console.log(this.singer);
-			const result = await getSingerDetail(this.singer);
+			if (!this.computedSinger) {
+				const path = this.$route.matched[0].path;
+				this.$router.push({
+					path,
+				});
+				return;
+			}
+			// * https://segmentfault.com/q/1010000010364198
+			const result = await getSingerDetail(this.computedSinger);
 			await processSongs(result.songs);
 			this.songs = result.songs;
 			this.loading = false;

@@ -81,6 +81,7 @@
 			},
 			filterStyle() {
 				const scrollY = this.scrollY;
+				// * Vue 优化技巧，缓存属性
 				const imageHeight = this.imageHeight;
 				let blur = 0;
 
