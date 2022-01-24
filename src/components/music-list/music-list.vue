@@ -11,6 +11,7 @@
 			class="list"
 			:style="scrollSyle"
 			v-loading="loading"
+			v-no-result:[noResultText]="noResult"
 			:probe-type="3"
 			@scroll="onScroll"
 		>
@@ -43,6 +44,10 @@
 			title: String,
 			pic: String,
 			loading: Boolean,
+			noResultText: {
+				type: String,
+				default: "抱歉，没有找到可播放歌曲",
+			},
 		},
 		data() {
 			return {
@@ -52,6 +57,9 @@
 			};
 		},
 		computed: {
+			noResult() {
+				return !this.loading && !this.songs.length;
+			},
 			bgImageStyle() {
 				const scrollY = this.scrollY;
 				let zIndex = 0;
