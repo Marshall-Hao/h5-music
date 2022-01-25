@@ -16,6 +16,17 @@
                     <h2 class="subtitle">{{ currentSong.singer }}</h2>
                 </div>
                 <div class="bottom">
+                    <div class="progress-wrapper">
+                        <span class="time time-l">{{ formatTime(currentTime) }}</span>
+                        <div class="progress-bar-wrapper">
+                            <progress-bar
+                                :progress="progress"
+                                @progress-changing="onProgressChanging"
+                                @progress-changed="onProgressChanged"
+                            ></progress-bar>
+                        </div>
+                        <span class="time time-r">{{ formatTime(currentSong.duration) }}</span>
+                    </div>
                     <div class="operators">
                         <div class="icon i-left">
                             <i :class="modeIcon" @click="changeMode"></i>
@@ -40,7 +51,14 @@
             </template>
         </div>
         <!-- * 自带pause事件 , canplay事件-->
-        <audio ref="audioRef" @pause="pause" @canplay="ready" @error="error"></audio>
+        <audio
+            ref="audioRef"
+            @pause="pause"
+            @canplay="ready"
+            @error="error"
+            @timeupdate="updateTime"
+            @ended="end"
+        ></audio>
     </div>
 </template>
 
@@ -51,14 +69,21 @@ import { watch } from "@vue/runtime-core";
 import { ref } from "vue";
 import useMode from './use-mode'
 import useFavorite from "./use-fav";
-
+//  * 通过setup可以直接return到模版中，不需要mehtods在定义
+import { formatTime } from "../../assets/js/util";
+import progressBar from "./progress-bar";
+import { PLAY_MODE } from "../../assets/js/constant";
 export default {
     name: "player",
+    components: {
+        progressBar
+    },
     setup() {
         //  * data
         const audioRef = ref(null);
         const songReady = ref(false);
-
+        const currentTime = ref(0);
+        let progressChaning = false
         // * vuex
         const store = useStore();
 
@@ -70,6 +95,7 @@ export default {
         const currentSong = computed(() => store.getters.currentSong);
         const playlist = computed(() => store.state.playlist)
         const playing = computed(() => store.state.playing)
+        const playMode = computed(() => store.state.playMode)
         //  * hooks
         const { modeIcon, changeMode } = useMode()
         const { getFavoriteIcon, toggleFavorite } = useFavorite()
@@ -80,13 +106,17 @@ export default {
         const disableCls = computed(() => {
             return songReady.value ? '' : 'disable'
         })
-
+        const progress = computed(() => {
+            return currentTime.value / currentSong.value.duration
+        })
         // * watch 更侧重业务员逻辑
         watch(currentSong, (newSong) => {
             if (!newSong.id || !newSong.url) {
                 return;
             }
             songReady.value = false
+            // * 歌曲切换为0
+            currentTime.value = 0
             const audioEl = audioRef.value;
             audioEl.src = newSong.url;
             audioEl.play();
@@ -161,6 +191,7 @@ export default {
             const audioEl = audioRef.value;
             audioEl.currentTime = 0
             audioEl.play()
+            store.commit('setPlayingState', true)
         }
 
         //  * 错误保护
@@ -175,26 +206,62 @@ export default {
             songReady.value = true
         }
 
+        function updateTime(e) {
+            //  * 降低播放器本身的currentTime修改优先级
+            if (!progressChaning) {
+                currentTime.value = e.target.currentTime
+            }
+        }
+
+        function onProgressChanging(progress) {
+            console.log(progress)
+            progressChaning = true
+            currentTime.value = currentSong.value.duration * progress
+        }
+
+        function onProgressChanged(progress) {
+            console.log(progress)
+            audioRef.value.currentTime = currentTime.value = currentSong.value.duration * progress
+            if (!playing.value) {
+                store.commit('setPlayingState', true)
+            }
+        }
+
+        function end() {
+            currentTime.value = 0
+            if (playMode.value === PLAY_MODE.loop) {
+                loop()
+            } else {
+                next()
+            }
+        }
         // * 模版中的变量 一定要在setup函数中return出去，这样才能在模版中渲染出来。
         return {
             fullScreen,
             currentSong,
             audioRef,
+            currentTime,
             goBack,
             playIcon,
             togglePlay,
+            progress,
             pause,
             prev,
             next,
             ready,
             disableCls,
             error,
+            updateTime,
             // * modeIcon
             modeIcon,
             changeMode,
             //  * fav
             getFavoriteIcon,
-            toggleFavorite
+            toggleFavorite,
+            formatTime,
+            onProgressChanging,
+            onProgressChanged,
+            end
         };
     },
 };
