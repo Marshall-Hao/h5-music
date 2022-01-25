@@ -14,6 +14,7 @@
     "axios": "^0.25.0",
     "core-js": "^3.6.5",
     "good-storage": "^1.1.1",
+    "lyric-parser": "^1.0.1",
     "vue": "^3.2.8",
     "vue-router": "^4.0.11",
     "vue3-lazy": "^1.0.0-alpha.1",
@@ -33,6 +34,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^7.0.0",
+    "js-base64": "^3.7.2",
     "node-sass": "^5.0.0",
     "pinyin": "^2.10.2",
     "sass-loader": "^10.1.0"
