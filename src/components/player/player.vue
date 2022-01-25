@@ -18,7 +18,7 @@
                 <div class="bottom">
                     <div class="operators">
                         <div class="icon i-left">
-                            <i class="icon-sequence"></i>
+                            <i :class="modeIcon" @click="changeMode"></i>
                         </div>
                         <div class="icon i-left" :class="disableCls">
                             <i class="icon-prev" @click="prev"></i>
@@ -46,13 +46,17 @@ import { computed } from "@vue/reactivity";
 import { useStore } from "vuex";
 import { watch } from "@vue/runtime-core";
 import { ref } from "vue";
+import useMode from './use-mode'
 export default {
     name: "player",
     setup() {
+        //  * data
         const audioRef = ref(null);
         const songReady = ref(false);
 
+        // * vuex
         const store = useStore();
+
         const fullScreen = computed(() => {
             return store.state.fullScreen;
         });
@@ -61,12 +65,18 @@ export default {
         const currentSong = computed(() => store.getters.currentSong);
         const playlist = computed(() => store.state.playlist)
         const playing = computed(() => store.state.playing)
+        //  * hooks
+        const { modeIcon, changeMode } = useMode()
+
+        // * computed
         const playIcon = computed(() => {
             return playing.value ? 'icon-pause' : 'icon-play'
         })
         const disableCls = computed(() => {
             return songReady.value ? '' : 'disable'
         })
+
+        // * watch 更侧重业务员逻辑
         watch(currentSong, (newSong) => {
             if (!newSong.id || !newSong.url) {
                 return;
@@ -85,6 +95,7 @@ export default {
             newPlaying ? audioEl.play() : audioEl.pause()
         })
 
+        //  * method
         function goBack() {
             store.commit("setFullScreen", false);
         }
@@ -158,6 +169,7 @@ export default {
         function error() {
             songReady.value = true
         }
+
         // * 模版中的变量 一定要在setup函数中return出去，这样才能在模版中渲染出来。
         return {
             fullScreen,
@@ -171,7 +183,10 @@ export default {
             next,
             ready,
             disableCls,
-            error
+            error,
+            // * modeIcon
+            modeIcon,
+            changeMode
         };
     },
 };
