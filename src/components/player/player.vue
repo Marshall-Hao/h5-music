@@ -1,5 +1,5 @@
 <template>
-    <div class="player">
+    <div class="player" v-show="playlist.length">
         <!--  * v-show 会渲染好 v-show 和 v-if的区别 -->
         <div class="normal-player" v-show="fullScreen">
             <!-- * v-if 没有达到条件不渲染 -->
@@ -102,6 +102,7 @@
             @ended="end"
         ></audio>
     </div>
+    <mini-player v-show="playlist.length" :progress="progress" :togglePlay="togglePlay"></mini-player>
 </template>
 
 <script>
@@ -118,12 +119,14 @@ import useMiddleInteractive from "./use-middle-interactive";
 import { formatTime } from "../../assets/js/util";
 import progressBar from "./progress-bar";
 import Scroll from "../base/scroll/scroll";
+import MiniPlayer from "./mini-player";
 import { PLAY_MODE } from "../../assets/js/constant";
 export default {
     name: "player",
     components: {
         progressBar,
-        Scroll
+        Scroll,
+        MiniPlayer
     },
     setup() {
         //  * data
@@ -302,6 +305,7 @@ export default {
             currentSong,
             audioRef,
             currentTime,
+            playlist,
             goBack,
             playIcon,
             togglePlay,
