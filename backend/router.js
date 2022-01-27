@@ -335,7 +335,6 @@ function registerSingerDetail(app) {
   app.get("/api/getSingerDetail", (req, res) => {
     const url = "https://u.y.qq.com/cgi-bin/musics.fcg";
     // * https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
-    console.log(req);
     const data = JSON.stringify({
       comm: { ct: 24, cv: 0 },
       singerSongList: {
@@ -354,7 +353,6 @@ function registerSingerDetail(app) {
       data,
     }).then((response) => {
       const data = response.data;
-      console.log(data);
       if (data.code === ERR_OK) {
         const list = data.singerSongList.data.songList;
         // 歌单详情、榜单详情接口都有类似处理逻辑，固封装成函数

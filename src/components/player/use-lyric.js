@@ -8,6 +8,8 @@ export default function useLyric({ songReady, currentTime }) {
   const currentLineNum = ref(0);
   const lyricScrollRef = ref(null);
   const lyricListRef = ref(null);
+  const pureMusicLyric = ref("");
+  const playingLyric = ref("");
 
   const store = useStore();
   const currentSong = computed(() => {
@@ -21,6 +23,8 @@ export default function useLyric({ songReady, currentTime }) {
     stopLyric();
     currentLyric.value = null;
     currentLineNum.value = 0;
+    pureMusicLyric.value = "";
+    playingLyric.value = "";
     const lyric = await getLyric(newSong);
     // * vuex中的数据只能通过mutation修改
     store.commit("addSongLyric", {
@@ -31,14 +35,21 @@ export default function useLyric({ songReady, currentTime }) {
       return;
     }
     currentLyric.value = new Lyric(lyric, handleLyric);
-    if (songReady.value) {
-      //  * playLyric
-      playLyric();
+    const hasLyric = currentLyric.value.lines.length;
+    if (hasLyric) {
+      if (songReady.value) {
+        //  * playLyric
+        playLyric();
+      }
+    } else {
+      pureMusicLyric.value = lyric.replace(/\[(\d{2}):(\d{2}):(\d{2})\]/g, "");
     }
   });
 
-  function handleLyric({ lineNum }) {
+  function handleLyric({ lineNum, txt }) {
+    console.log(txt);
     currentLineNum.value = lineNum;
+    playingLyric.value = txt;
     const scrollComp = lyricScrollRef.value;
     const listEl = lyricListRef.value;
     if (!listEl) {
@@ -71,9 +82,11 @@ export default function useLyric({ songReady, currentTime }) {
   return {
     currentLyric,
     currentLineNum,
+    pureMusicLyric,
     playLyric,
     stopLyric,
     lyricListRef,
     lyricScrollRef,
+    playingLyric,
   };
 }

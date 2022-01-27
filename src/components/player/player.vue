@@ -15,8 +15,13 @@
                     <h1 class="title">{{ currentSong.name }}</h1>
                     <h2 class="subtitle">{{ currentSong.singer }}</h2>
                 </div>
-                <div class="middle">
-                    <div class="middle-l">
+                <div
+                    class="middle"
+                    @touchstart.prevent="onMiddleTouchStart"
+                    @touchmove.prevent="onMiddleTouchMove"
+                    @touchend.prevent="onMiddleTouchEnd"
+                >
+                    <div class="middle-l" :style="middleLStyle">
                         <div class="cd-wrapper">
                             <div ref="cdRef" class="cd">
                                 <img
@@ -28,8 +33,11 @@
                                 />
                             </div>
                         </div>
+                        <div class="playing-lyric-wrapper">
+                            <div class="playing-lyric">{{ playingLyric }}</div>
+                        </div>
                     </div>
-                    <scroll class="middle-r" ref="lyricScrollRef">
+                    <scroll class="middle-r" :style="middleRStyle" ref="lyricScrollRef">
                         <div class="lyric-wrapper">
                             <div v-if="currentLyric" ref="lyricListRef">
                                 <p
@@ -39,13 +47,17 @@
                                     :key="line.num"
                                 >{{ line.txt }}</p>
                             </div>
-                            <!-- <div class="pure-music" v-show="pureMusicLyric">
-                            <p>{{ pureMusicLyric }}</p>
-                            </div>-->
+                            <div class="pure-music" v-show="pureMusicLyric">
+                                <p>{{ pureMusicLyric }}</p>
+                            </div>
                         </div>
                     </scroll>
                 </div>
                 <div class="bottom">
+                    <div class="dot-wrapper">
+                        <span class="dot" :class="{ 'active': currentShow === 'cd' }"></span>
+                        <span class="dot" :class="{ 'active': currentShow === 'lyric' }"></span>
+                    </div>
                     <div class="progress-wrapper">
                         <span class="time time-l">{{ formatTime(currentTime) }}</span>
                         <div class="progress-bar-wrapper">
@@ -101,6 +113,7 @@ import useMode from './use-mode'
 import useFavorite from "./use-fav";
 import useCD from "./use-cd";
 import useLyric from "./use-lyric";
+import useMiddleInteractive from "./use-middle-interactive";
 //  * 通过setup可以直接return到模版中，不需要mehtods在定义
 import { formatTime } from "../../assets/js/util";
 import progressBar from "./progress-bar";
@@ -134,7 +147,8 @@ export default {
         const { modeIcon, changeMode } = useMode()
         const { getFavoriteIcon, toggleFavorite } = useFavorite()
         const { cdCls, cdRef, cdImageRef } = useCD()
-        const { currentLyric, currentLineNum, playLyric, stopLyric, lyricListRef, lyricScrollRef } = useLyric({ songReady, currentTime })
+        const { currentLyric, currentLineNum, playLyric, stopLyric, lyricListRef, lyricScrollRef, pureMusicLyric, playingLyric } = useLyric({ songReady, currentTime })
+        const { currentShow, middleLStyle, middleRStyle, onMiddleTouchEnd, onMiddleTouchMove, onMiddleTouchStart } = useMiddleInteractive()
         // * computed
         const playIcon = computed(() => {
             return playing.value ? 'icon-pause' : 'icon-play'
@@ -317,7 +331,16 @@ export default {
             currentLyric,
             currentLineNum,
             lyricListRef,
-            lyricScrollRef
+            lyricScrollRef,
+            pureMusicLyric,
+            playingLyric,
+            // * middleInteractive
+            currentShow,
+            middleLStyle,
+            middleRStyle,
+            onMiddleTouchEnd,
+            onMiddleTouchMove,
+            onMiddleTouchStart
         };
     },
 };
@@ -394,7 +417,6 @@ export default {
                 width: 100%;
                 height: 0;
                 padding-top: 80%;
-                display: none;
                 .cd-wrapper {
                     position: absolute;
                     left: 10%;
