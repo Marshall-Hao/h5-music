@@ -12,9 +12,13 @@
                     />
                 </div>
             </div>
-            <div class="slider-wrapper">
-                <h2 class="name">{{ currentSong.name }}</h2>
-                <p class="desc">{{ currentSong.singer }}</p>
+            <div ref="sliderWrapperRef" class="slider-wrapper">
+                <div class="slider-group">
+                    <div class="slider-page" v-for="song in playlist" :key="song.id">
+                        <p class="desc">{{ song.singer }}</p>
+                        <h2 class="name">{{ song.name }}</h2>
+                    </div>
+                </div>
             </div>
             <div class="control">
                 <progress-circle :radius="32" :progress="progress">
@@ -30,6 +34,7 @@
 import { computed } from "vue"
 import { useStore } from "vuex"
 import useCD from "./use-cd"
+import useMiniSlider from "./use-mini-slider"
 import ProgressCircle from "./progress-circle"
 
 export default {
@@ -51,9 +56,9 @@ export default {
             return store.getters.currentSong
         })
         const playing = computed(() => store.state.playing)
-
+        const playlist = computed(() => store.state.playlist)
         const { cdCls, cdRef, cdImageRef } = useCD()
-
+        const { sliderWrapperRef } = useMiniSlider()
         const miniPlayIcon = computed(() => {
             return playing.value ? 'icon-pause-mini' : 'icon-play-mini'
         })
@@ -63,12 +68,15 @@ export default {
         return {
             fullScreen,
             currentSong,
+            playlist,
             // *cd
             cdCls,
             cdRef,
             cdImageRef,
             showNormalPlayer,
-            miniPlayIcon
+            miniPlayIcon,
+            // * mini-slider
+            sliderWrapperRef
         }
     }
 
