@@ -29,6 +29,7 @@ export default function useFavorite() {
 
   function isFavorite(song) {
     return (
+      //  * 不能用indexOf 因为 对象的值可能一样但 引用不一样
       favoriteList.value.findIndex((item) => {
         return item.id === song.id;
       }) > -1
