@@ -14,10 +14,12 @@ function insertArray(arr, val, compare, maxLen) {
 
 function deleteFromArray(arr, compare) {
   const index = arr.findIndex(compare);
-  if (index > -1) {
+  console.log(index);
+  if (index <= -1) {
     return;
   }
   //  * https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/splice
+  console.log(arr);
   arr.splice(index, 1);
 }
 
@@ -31,6 +33,7 @@ export function save(item, key, compare, maxLen) {
 
 export function remove(key, compare) {
   const items = storage.get(key, []);
+  console.log("remove again");
   deleteFromArray(items, compare);
   storage.set(key, items);
   return items;

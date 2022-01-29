@@ -50,10 +50,9 @@ export default function useMiniSlider() {
               loop: true,
             },
           });
-
+          //   * 删除一首歌，会造成index（pageX）的改变，所以会触发slidePageChange事件
           sliderVal.on("slidePageChanged", ({ pageX }) => {
             store.commit("setCurrentIndex", pageX);
-            store.commit("setPlayingState", true);
           });
         } else {
           sliderVal.refresh();
@@ -65,6 +64,14 @@ export default function useMiniSlider() {
     watch(currentIndex, (newIndex) => {
       if (sliderVal && sliderShow.value) {
         sliderVal.goToPage(newIndex, 0, 0);
+      }
+    });
+
+    watch(playlist, async () => {
+      if (sliderVal && sliderShow.value) {
+        //   * dom变化在数据变化之后
+        await nextTick();
+        sliderVal.refresh();
       }
     });
   });

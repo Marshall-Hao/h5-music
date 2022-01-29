@@ -15,6 +15,7 @@ export default function useFavorite() {
   function toggleFavorite(song) {
     let list;
     if (isFavorite(song)) {
+      console.log("remove");
       // * remove
       list = remove(FAVORITE_KEY, compare);
     } else {
