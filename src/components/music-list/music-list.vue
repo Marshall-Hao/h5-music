@@ -22,7 +22,7 @@
 			@scroll="onScroll"
 		>
 			<div class="song-list-wrapper">
-				<song-list :songs="songs" @select="selectItem"></song-list>
+				<song-list :songs="songs" @select="selectItem" :rank="rank"></song-list>
 			</div>
 		</scroll>
 	</div>
@@ -55,6 +55,7 @@ export default {
 			type: String,
 			default: "抱歉，没有找到可播放歌曲",
 		},
+		rank: Boolean
 	},
 	data() {
 		return {
