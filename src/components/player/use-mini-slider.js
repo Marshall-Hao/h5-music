@@ -67,8 +67,8 @@ export default function useMiniSlider() {
       }
     });
 
-    watch(playlist, async () => {
-      if (sliderVal && sliderShow.value) {
+    watch(playlist, async (newList) => {
+      if (sliderVal && sliderShow.value && newList.length) {
         //   * dom变化在数据变化之后
         await nextTick();
         sliderVal.refresh();
@@ -78,7 +78,7 @@ export default function useMiniSlider() {
 
   onUnmounted(() => {
     //   * 有值才销毁
-    if (slider.value) {
+    if (slider.value && playlist.length) {
       sliderVal.value.destroy();
     }
   });

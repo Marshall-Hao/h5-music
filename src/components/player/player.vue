@@ -101,6 +101,9 @@
                 </template>
             </div>
         </transition>
+        <transition name="mini">
+            <mini-player v-if="playlist.length" :progress="progress" :togglePlay="togglePlay"></mini-player>
+        </transition>
         <!-- * 自带pause事件 , canplay事件-->
         <audio
             ref="audioRef"
@@ -112,7 +115,6 @@
         ></audio>
     </div>
     <!-- :progress="progress" :togglePlay="togglePlay" -->
-    <mini-player v-if="playlist.length" :progress="progress" :togglePlay="togglePlay"></mini-player>
 </template>
 
 <script>
@@ -605,5 +607,14 @@ export default {
             }
         }
     }
+}
+.mini-enter-active,
+.mini-leave-active {
+    transition: all 0.6s cubic-bezier(0.45, 0, 0.55, 1);
+}
+.mini-enter-from,
+.mini-leave-to {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
 }
 </style>

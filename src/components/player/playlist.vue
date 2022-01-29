@@ -86,7 +86,7 @@ export default {
         const { getFavoriteIcon, toggleFavorite } = useFavorite()
         // * watch
         watch(currentSong, async (newSong) => {
-            if (!visible.value || !newSong.id) {
+            if (!newSong || !visible.value || !newSong.id) {
                 return;
             }
             // * 有可能改变数据， 所以dom的改变要等会
@@ -145,6 +145,9 @@ export default {
             }
             removing.value = true
             store.dispatch('removeSong', song)
+            if (!playlist.value.length) {
+                hide()
+            }
             setTimeout(() => {
                 removing.value = false
             }, 300)

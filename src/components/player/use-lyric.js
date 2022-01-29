@@ -17,7 +17,7 @@ export default function useLyric({ songReady, currentTime }) {
   });
 
   watch(currentSong, async (newSong) => {
-    if (!newSong.url || !newSong.id) {
+    if (!newSong || !newSong.url || !newSong.id) {
       return;
     }
     stopLyric();
