@@ -17,6 +17,6 @@ export function get(url, params) {
       }
     })
     .catch((e) => {
-      console.error(e);
+      console.error("error is", e);
     });
 }

@@ -1,8 +1,8 @@
 <template>
     <div class="search-input">
         <i class="icon-search"></i>
-        <input class="input-inner" v-model="query" />
-        <i class="icon-dismiss"></i>
+        <input class="input-inner" v-model="query" :placeholder="placeholder" />
+        <i v-show="query" class="icon-dismiss" @click="clear"></i>
     </div>
 </template>
 
@@ -11,18 +11,33 @@ import { debounce } from 'throttle-debounce'
 
 export default {
     name: 'search-input',
+    // *https://segmentfault.com/a/1190000040863402
     props: {
-        modelValue: String
+        // * 父组件 传v-model 默认props
+        modelValue: String,
+        placeholder: {
+            type: String,
+            default: '搜索歌曲、歌手'
+        }
     },
     data() {
         return {
+            // * data只在初始化第一次被赋予prop的值，后面如需响应需要通过watch prop的变化
             query: this.modelValue
         }
     },
-    watch: {
-        query(newQuery) {
-            // * https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/Trim
+    created() {
+        this.$watch('query', debounce(300, (newQuery) => {
             this.$emit('update:modelValue', newQuery.trim())
+        }))
+
+        this.$watch('modelValue', (newVal) => {
+            this.query = newVal
+        })
+    },
+    methods: {
+        clear() {
+            this.query = ""
         }
     }
 }
